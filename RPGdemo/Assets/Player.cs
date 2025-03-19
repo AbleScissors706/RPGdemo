@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public Rigidbody2D rb;
-    public float moveSpeed;
-    public float jumpForce;
+    private Rigidbody2D rb;
+    [SerializeField]private float moveSpeed;
+    [SerializeField]private float jumpForce;
     private float xInput;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
