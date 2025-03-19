@@ -8,7 +8,15 @@ public class Player : MonoBehaviour
     [SerializeField]private float jumpForce;
 
     private float xInput;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    private int facingDirection = 1;
+    private bool facingRight = true;
+    
+    [Header("Collision Info")]
+    [SerializeField] private float groundCheckDistance;
+    [SerializeField] private LayerMask wahtIsGround;
+    private bool isGrounded;
+    
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -19,8 +27,15 @@ public class Player : MonoBehaviour
     {
         Movement();
         CheckInput();
+        CollisionChecks();
 
+        FlipController();
         AnimatorControllers();
+    }
+
+    private void CollisionChecks()
+    {
+        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, wahtIsGround);
     }
 
     private void CheckInput()
@@ -40,7 +55,10 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        if(isGrounded)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        }        
     }
 
     private void AnimatorControllers()
@@ -49,5 +67,29 @@ public class Player : MonoBehaviour
         isMoving = rb.linearVelocity.x != 0;
 
         anim.SetBool("isMoving", isMoving);
+    }
+
+    private void Flip()
+    {
+        facingDirection = facingDirection * -1;
+        facingRight = !facingRight;
+        transform.Rotate(0, 180, 0);
+    }
+
+    private void FlipController()
+    {
+        if(rb.linearVelocity.x > 0 && !facingRight)
+        {
+            Flip();
+        }
+        else if(rb.linearVelocity.x < 0 && facingRight)
+        {
+            Flip();
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y - groundCheckDistance));
     }
 }
